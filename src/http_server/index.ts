@@ -5,8 +5,6 @@ import * as http from 'http';
 export const httpServer = http.createServer(function (req, res) {
   const __dirname = path.resolve(path.dirname(''));
   const file_path = __dirname + (req.url === '/' ? '/front/index.html' : '/front' + req.url);
-  const a = 'eee';
-  console.log(a);
   fs.readFile(file_path, function (err, data) {
     if (err) {
       res.writeHead(404);
