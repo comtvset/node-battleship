@@ -1,4 +1,4 @@
-let currentRoomId = 0;
+let currentRoomId = 1;
 
 export const generateRoomId = () => {
   return currentRoomId++;

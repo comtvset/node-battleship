@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
-import { USERS } from '../dataBase/usersBase';
 import { WebSocket } from 'ws';
+import { USERS } from '../dataBase/dataBase';
 
 export const checkUser = (ws: WebSocket, name: string, password: string, wsKey: string) => {
   for (const [, userData] of USERS.entries()) {

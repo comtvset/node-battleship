@@ -1,11 +1,9 @@
-import { ROOMS } from '../dataBase/roomsBase';
-import { WSCLIENTS } from '../dataBase/wsClientsBase';
 import { RoomData, RoomUser } from '../types/types';
 import { WebSocket } from 'ws';
 import { generateRoomId } from '../utils/generateRoomId';
-import { USERS } from '../dataBase/usersBase';
 import { getUserIdByName } from '../utils/getUser';
 import { logOutgoing } from '../utils/logging';
+import { ROOMS, USERS, WSCLIENTS } from '../dataBase/dataBase';
 
 export const regUser = (ws: WebSocket, name: string, password: string, err: string) => {
   const response = {
@@ -18,8 +16,6 @@ export const regUser = (ws: WebSocket, name: string, password: string, err: stri
     id: 0,
   };
 
-  // const json = JSON.stringify(response, null, 2);
-  // console.log(`\x1b[32m->\x1b[0m ${json}`);
   const json = logOutgoing(response);
   ws.send(json);
 };
@@ -64,12 +60,8 @@ export const updateRoom = () => {
     id: 0,
   };
 
-  // const json = JSON.stringify(response);
-  // const json = JSON.stringify(response, null, 2);
-
   for (const client of WSCLIENTS) {
     if (client.readyState === WebSocket.OPEN) {
-      // console.log(`\x1b[32m->\x1b[0m ${json}`);
       const json = logOutgoing(response);
 
       client.send(json);
@@ -77,7 +69,7 @@ export const updateRoom = () => {
   }
 };
 
-export const createGame = (users: string[]) => {
+export const createGame = (users: string[], gameId: string) => {
   const [playerOne, playerTwo] = users;
   const playerOneId = getUserIdByName(playerOne);
   const playerTwoId = getUserIdByName(playerTwo);
@@ -91,28 +83,28 @@ export const createGame = (users: string[]) => {
       const response = {
         type: 'create_game',
         data: JSON.stringify({
-          idGame: '1',
+          idGame: gameId,
           idPlayer: playerOneId,
         }),
         id: 0,
       };
       const json = logOutgoing(response);
 
-      user.ws.send(JSON.stringify(json));
+      user.ws.send(json);
     }
 
     if (user.name === playerTwo && user.ws.readyState === WebSocket.OPEN) {
       const response = {
         type: 'create_game',
         data: JSON.stringify({
-          idGame: '1',
+          idGame: gameId,
           idPlayer: playerTwoId,
         }),
         id: 0,
       };
       const json = logOutgoing(response);
 
-      user.ws.send(JSON.stringify(json));
+      user.ws.send(json);
     }
   }
 };
@@ -143,7 +135,6 @@ export const addUserToRoom = (userName: string, roomId: string) => {
 
       const user1 = owner;
       const user2 = userName;
-      // console.log(JSON.stringify([...ROOMS], null, 2));
       return [user1, user2];
     }
   }
