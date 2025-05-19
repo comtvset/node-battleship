@@ -4,6 +4,8 @@ import { logOutgoing } from '../utils/logging';
 import { WebSocket } from 'ws';
 import { Cell, PlacedShip } from '../types/types';
 import { turn } from './turn';
+import { getSurroundingCells } from '../utils/getSurroundingCells';
+import { finish } from './finish';
 
 export const attack = (userId: string, x: number, y: number) => {
   const gameId = USER_TO_GAME.get(userId);
@@ -66,6 +68,8 @@ export const attack = (userId: string, x: number, y: number) => {
         feedback(pos, 'miss');
       }
     }
+
+    if (finish(userId)) return;
   } else {
     feedback({ x, y }, 'miss');
     status = 'miss';
@@ -74,29 +78,4 @@ export const attack = (userId: string, x: number, y: number) => {
   if (status === 'miss') {
     turn(getUserById(userId)?.ws, userId);
   }
-};
-
-export const getSurroundingCells = (ship: PlacedShip): Cell[] => {
-  const set = new Set<string>();
-
-  for (const { x, y } of ship.cells) {
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        const nx = x + dx;
-        const ny = y + dy;
-        const key = `${nx}:${ny}`;
-
-        if (!ship.cells.some((c) => c.x === nx && c.y === ny)) {
-          if (nx >= 0 && nx < 10 && ny >= 0 && ny < 10) {
-            set.add(key);
-          }
-        }
-      }
-    }
-  }
-
-  return Array.from(set).map((str) => {
-    const [x, y] = str.split(':').map(Number);
-    return { x, y };
-  });
 };

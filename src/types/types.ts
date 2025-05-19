@@ -44,3 +44,14 @@ export type StartGamePayload = {
   ships: Ship[];
   indexPlayer: string;
 };
+
+export type WinnerRecord = {
+  name: string;
+  wins: number;
+};
+
+export type UpdateWinnersMessage = {
+  type: 'update_winners';
+  data: WinnerRecord[];
+  id: number;
+};

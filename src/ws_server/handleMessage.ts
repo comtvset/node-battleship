@@ -8,11 +8,11 @@ import { startGame } from '../commands/startGame';
 import { attack } from '../commands/attack';
 import { randomAttack } from '../commands/randomAttack';
 import { turn } from '../commands/turn';
-import { createRoom, reg } from '../commands/reg';
+import { reg } from '../commands/reg';
 import { updateRoom } from '../commands/updateRoom';
 import { addUserToRoom } from '../commands/addUserToRoom';
 import { createGame } from '../commands/createGame';
-// import { USER_TO_GAME } from '../dataBase/dataBase';
+import { createRoom } from '../commands/createRoom';
 
 export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMessage) => {
   let userName: string;
@@ -72,11 +72,7 @@ export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMess
         return;
       }
 
-      // console.log('MESSEGE ' + message);
       const gameId = String(parsedData.indexRoom);
-      // console.log('indexRoom ' + gameId);
-
-      // console.dir(USER_TO_GAME, { depth: null, colors: true });
 
       logIncoming(raw);
       createGame(users, gameId);
@@ -110,6 +106,7 @@ export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMess
 
       attack(userInfo.userId, x, y);
       break;
+
     default:
       console.warn(`Unknown message type: ${type}`);
   }
