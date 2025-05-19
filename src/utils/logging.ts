@@ -10,5 +10,6 @@ export const logIncoming = (raw: string) => {
 export const logOutgoing = (response: unknown) => {
   const json = JSON.stringify(response, null, 2);
   console.log(`${GREEN}->${RESET_COLOR} ${json}`);
+
   return json;
 };

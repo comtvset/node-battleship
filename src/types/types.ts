@@ -20,6 +20,21 @@ export type RoomDataItem = {
 export type RoomData = RoomDataItem[];
 
 export type GameData = {
-  idGame: number | string;
-  idPlayer: number | string;
+  players: string[];
+  ships: Record<string, Ship[]>;
+  isStarted: boolean;
+  currentTurnPlayerId: string;
+};
+
+export type Ship = {
+  position: { x: number; y: number };
+  direction: boolean;
+  type: string;
+  length: number;
+};
+
+export type StartGamePayload = {
+  gameId: string;
+  ships: Ship[];
+  indexPlayer: string;
 };
