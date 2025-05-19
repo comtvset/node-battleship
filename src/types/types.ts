@@ -21,9 +21,15 @@ export type RoomData = RoomDataItem[];
 
 export type GameData = {
   players: string[];
-  ships: Record<string, Ship[]>;
+  ships: Record<string, PlacedShip[]>;
   isStarted: boolean;
   currentTurnPlayerId: string;
+};
+
+export type Cell = { x: number; y: number };
+export type PlacedShip = {
+  cells: Cell[];
+  hp: number;
 };
 
 export type Ship = {

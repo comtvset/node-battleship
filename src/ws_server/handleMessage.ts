@@ -3,15 +3,15 @@ import { UserData } from '../types/types';
 import { IncomingMessage } from 'http';
 import { getUserByWsKey } from '../utils/getUser';
 import { checkUser } from '../utils/checkUser';
-import {
-  addUserToRoom,
-  createGame,
-  createRoom,
-  regUser,
-  updateRoom,
-} from '../commands/commandsReg';
 import { logIncoming } from '../utils/logging';
-import { randomAttack, startGame, turn } from '../commands/commandsGame';
+import { startGame } from '../commands/startGame';
+import { attack } from '../commands/attack';
+import { randomAttack } from '../commands/randomAttack';
+import { turn } from '../commands/turn';
+import { createRoom, reg } from '../commands/reg';
+import { updateRoom } from '../commands/updateRoom';
+import { addUserToRoom } from '../commands/addUserToRoom';
+import { createGame } from '../commands/createGame';
 // import { USER_TO_GAME } from '../dataBase/dataBase';
 
 export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMessage) => {
@@ -51,15 +51,17 @@ export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMess
     case 'reg':
       const check = checkUser(ws, userName, password, wsKey);
       if (check instanceof Error) {
-        regUser(ws, userName, password, check.message);
+        reg(ws, userName, password, check.message);
       } else {
-        regUser(ws, userName, password, null);
+        reg(ws, userName, password, null);
       }
       logIncoming(raw);
+      updateRoom();
       break;
     case 'create_room':
       logIncoming(raw);
       createRoom(userName);
+      updateRoom();
       break;
     case 'add_user_to_room':
       const { data: rawData } = parsed;
@@ -78,6 +80,7 @@ export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMess
 
       logIncoming(raw);
       createGame(users, gameId);
+      updateRoom();
       break;
     case 'add_ships':
       logIncoming(raw);
@@ -101,11 +104,13 @@ export const handleMessage = (message: RawData, ws: WebSocket, req: IncomingMess
 
       logIncoming(raw);
 
-      randomAttack(userInfo.userId);
-      turn(ws, userInfo.userId);
+      const attackPayload = typeof parsed.data === 'string' ? JSON.parse(parsed.data) : parsed.data;
+
+      const { x, y } = attackPayload;
+
+      attack(userInfo.userId, x, y);
       break;
     default:
       console.warn(`Unknown message type: ${type}`);
   }
-  updateRoom();
 };
